@@ -1,4 +1,7 @@
 
+using EmailRegistration.Services;
+using EmailRegistration.Services.Imp;
+
 namespace EmailRegistration
 {
     public class Program
@@ -10,6 +13,7 @@ namespace EmailRegistration
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IVerificationService, VerificationService>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

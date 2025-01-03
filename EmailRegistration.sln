@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35521.163 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailRegistration", "EmailRegistration\EmailRegistration.csproj", "{EEF7FCBB-479B-4467-BE63-236AB9938749}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthEmailSender", "AuthEmailSender\AuthEmailSender.csproj", "{66768C6A-ECBA-401F-89CF-A8D20E208E79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EEF7FCBB-479B-4467-BE63-236AB9938749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEF7FCBB-479B-4467-BE63-236AB9938749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEF7FCBB-479B-4467-BE63-236AB9938749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66768C6A-ECBA-401F-89CF-A8D20E208E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66768C6A-ECBA-401F-89CF-A8D20E208E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66768C6A-ECBA-401F-89CF-A8D20E208E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66768C6A-ECBA-401F-89CF-A8D20E208E79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
