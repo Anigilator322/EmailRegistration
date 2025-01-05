@@ -1,15 +1,24 @@
-﻿using EmailRegistration.Models;
+﻿using EmailRegistration.Contracts;
+using EmailRegistration.Settings;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
 
-namespace EmailRegistration.Services
+namespace EmailRegistration.Services.Imp
 {
-    public class EmailAuthQueueProducer
+    public class EmailAuthQueueProducer : IEmailAuthQueueProducer
     {
-        private const string _queueName = "email_verification";
-        private const string _hostName = "localhost";
-        public static void SendMessage(EmailVerificationRequest request)
+        private readonly string _queueName;
+        private readonly string _hostName;
+
+        public EmailAuthQueueProducer(IOptions<RabbitMqSettings> options)
+        {
+            _queueName = options.Value.EmailVerificationQueue;
+            _hostName = options.Value.RabbitMQUrl;
+        }
+
+        public void SendMessage(EmailVerificationMessage request)
         {
             var factory = new ConnectionFactory() { HostName = _hostName };
             using var connection = factory.CreateConnectionAsync().Result;

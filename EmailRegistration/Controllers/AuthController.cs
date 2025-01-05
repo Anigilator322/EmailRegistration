@@ -1,4 +1,4 @@
-﻿using EmailRegistration.Models;
+﻿using EmailRegistration.Contracts;
 using EmailRegistration.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,26 +8,32 @@ namespace EmailRegistration.Controllers
     [Route("api/auth")]
     public class AuthController : Controller
     {
-        private static Dictionary<string, string> _verificationCodes = new Dictionary<string, string>();
         private IVerificationService _verificationService;
+        private IEmailAuthQueueProducer _queueProducer;
+        private IAuthorizationUserService _userService;
 
-        public AuthController(IVerificationService verificationService)
+        public AuthController(IVerificationService verificationService, IEmailAuthQueueProducer queueProducer, IAuthorizationUserService userService)
         {
             _verificationService = verificationService;
+            _queueProducer = queueProducer;
+            _userService = userService;
         }
 
         [HttpPost("send-code")]
-        public IActionResult Index([FromBody] string email)
+        public async Task<IActionResult> IndexAsync([FromBody] string email)
         {
-            var code = _verificationService.GenerateVerificationCode();
-            _verificationCodes[email] = code;
+            if(!IsEmailValid(email))
+                return BadRequest("Invalid Email");
 
-            var request = new EmailVerificationRequest
+            var code = _verificationService.GenerateVerificationCode();
+            var message = new EmailVerificationMessage
             {
-                Email = email,
+                Email = email, 
                 VerificationCode = code
             };
-            EmailAuthQueueProducer.SendMessage(request);
+
+            await _userService.AuthorizeUserAsync(email, code);
+            _queueProducer.SendMessage(message);
 
             return Ok("Verification Code sent!");
         }
@@ -35,13 +41,22 @@ namespace EmailRegistration.Controllers
         [HttpPost("verify-code")]
         public IActionResult VerifyCode([FromBody] EmailVerificationRequest request)
         {
-            if (_verificationCodes.ContainsKey(request.Email) &&
-                _verificationCodes[request.Email] == request.VerificationCode)
+            var result = _verificationService.VerifyCode(request.Email, request.VerificationCode);
+
+            return Ok(new EmailVerificationResponse(request.Email, request.VerificationCode, result));
+        }
+
+        private bool IsEmailValid(string email)
+        {
+            try
             {
-                _verificationCodes.Remove(request.Email);
-                return Ok("Verification successful.");
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
             }
-            return BadRequest("Invalid code.");
+            catch
+            {
+                return false;
+            }
         }
     }
 }

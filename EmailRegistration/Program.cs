@@ -1,6 +1,10 @@
-
+using EmailRegistration.DataAccess;
+using EmailRegistration.Models;
 using EmailRegistration.Services;
 using EmailRegistration.Services.Imp;
+using EmailRegistration.Settings;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmailRegistration
 {
@@ -10,13 +14,27 @@ namespace EmailRegistration
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DbContext")));
 
+            builder.Services.AddIdentity<UserModel, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+            // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddScoped<IVerificationService, VerificationService>();
+            builder.Services.AddScoped<IEmailAuthQueueProducer, EmailAuthQueueProducer>();
+            builder.Services.AddScoped<IAuthorizationUserService, AuthorizationUserService>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.SetMinimumLevel(LogLevel.Debug);
+            });
+
 
             var app = builder.Build();
 
@@ -29,6 +47,7 @@ namespace EmailRegistration
 
             app.UseHttpsRedirection();
 
+            //app.UseAuthentication();
             app.UseAuthorization();
 
 

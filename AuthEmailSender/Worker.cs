@@ -1,3 +1,4 @@
+using EmailRegistration.Settings;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -7,15 +8,17 @@ namespace AuthEmailSender
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly RabbitMqSettings _settings;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, RabbitMqSettings settings)
         {
             _logger = logger;
+            _settings = settings;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() { HostName = _settings.RabbitMQUrl };
             var connection = await factory.CreateConnectionAsync();
             var channel = await connection.CreateChannelAsync();
 
@@ -31,15 +34,7 @@ namespace AuthEmailSender
                 }
             };
 
-            await channel.BasicConsumeAsync("email_verification", true, consumer);
-            /*while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
-            }*/
+            await channel.BasicConsumeAsync(_settings.EmailVerificationQueue, true, consumer);
         }
     }
 }
