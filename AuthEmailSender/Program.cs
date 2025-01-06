@@ -1,3 +1,4 @@
+using AuthEmailSender.Settings;
 using EmailRegistration.Settings;
 
 namespace AuthEmailSender
@@ -7,8 +8,11 @@ namespace AuthEmailSender
         public static void Main(string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
-            builder.Services.AddHostedService<Worker>();
+
+            builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("SmtpOptions"));
             builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
+            
+            builder.Services.AddHostedService<EmailSenderWorker>();
             var host = builder.Build();
             host.Run();
         }
