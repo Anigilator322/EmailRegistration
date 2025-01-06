@@ -17,7 +17,7 @@ namespace EmailRegistration.Services.Imp
             _queueName = options.Value.EmailVerificationQueue;
             _hostName = options.Value.RabbitMQUrl;
         }
-
+//Make override with returned value(exception or bool)
         public void SendMessage(EmailVerificationMessage request)
         {
             var factory = new ConnectionFactory() { HostName = _hostName };
