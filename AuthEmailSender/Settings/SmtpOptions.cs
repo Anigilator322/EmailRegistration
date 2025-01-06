@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AuthEmailSender.Settings
 {
-    public class SmtpOptions : ISmtpOptions
+    public class SmtpOptions
     {
         public string SmtpServer { get; set; }
         public int SmtpPort { get; set; }

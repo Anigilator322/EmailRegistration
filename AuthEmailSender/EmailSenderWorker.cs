@@ -1,19 +1,19 @@
 using AuthEmailSender.Services;
 using EmailRegistration.Contracts;
 using EmailRegistration.Settings;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
 
 namespace AuthEmailSender
 {
     public class EmailSenderWorker : BackgroundService
     {
         private readonly ILogger<EmailSenderWorker> _logger;
-        private readonly RabbitMqSettings _settings;
+        private readonly IOptions<RabbitMqSettings> _settings;
         private readonly ISendEmailService _sendEmailService;
 
-        public EmailSenderWorker(ILogger<EmailSenderWorker> logger, RabbitMqSettings settings, ISendEmailService sendEmailService)
+        public EmailSenderWorker(ILogger<EmailSenderWorker> logger, IOptions<RabbitMqSettings> settings, ISendEmailService sendEmailService)
         {
             _logger = logger;
             _settings = settings;
@@ -22,7 +22,7 @@ namespace AuthEmailSender
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var factory = new ConnectionFactory() { HostName = _settings.RabbitMQUrl };
+            var factory = new ConnectionFactory() { HostName = _settings.Value.RabbitMQUrl };
             var connection = await factory.CreateConnectionAsync();
             var channel = await connection.CreateChannelAsync();
 
@@ -36,10 +36,10 @@ namespace AuthEmailSender
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation(" [x] Received {0}", json);
-                    _sendEmailService.SendEmail(email.Email, "Email Verification", email.VerificationCode);
+                     _sendEmailService.SendEmail(email.Email, "Email Verification", email.VerificationCode);
                 }
             };
-            await channel.BasicConsumeAsync(_settings.EmailVerificationQueue, true, consumer);
+            await channel.BasicConsumeAsync(_settings.Value.EmailVerificationQueue, true, consumer);
             
         }
     }
