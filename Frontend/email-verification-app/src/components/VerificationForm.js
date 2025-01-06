@@ -12,11 +12,16 @@ const VerificationForm = ({ email }) => {
     setMessage("");
 
     try {
-      var res = await verifyCode(email, code);
-      
-      setMessage("Email успешно подтвержден!");
+      const res = await verifyCode(email, code);
+      if(res.isVerified)
+      {
+        setMessage("Email успешно подтвержден!");
+      }
+      else{
+        setMessage("Неверный код. Попробуйте еще раз.");
+      }
     } catch (err) {
-      setMessage("Неверный код. Попробуйте еще раз.");
+      setMessage("Произошла ошибка, попробуйте еще раз.");
     } finally {
       setLoading(false);
     }

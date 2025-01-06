@@ -7,7 +7,7 @@ export const sendVerificationEmail = async (email) => {
   return response.data;
 };
 
-export const verifyCode = async (email, code) => {
-  const response = await axios.post(`${API_BASE_URL}/verify-code`, { email, code });
+export const verifyCode = async (email, verificationCode) => {
+  const response = await axios.post(`${API_BASE_URL}/verify-code`, { email, verificationCode });
   return response.data;
 };

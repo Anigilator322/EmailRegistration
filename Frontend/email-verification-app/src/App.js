@@ -7,7 +7,7 @@ function App() {
   const [email, setEmail] = useState("");
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Подтверждение Email</h1>
+      <h1>Email авторизация</h1>
       {!email ? (
         <EmailForm onEmailSent={setEmail} />
       ) : (
