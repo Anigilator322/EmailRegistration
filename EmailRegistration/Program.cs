@@ -14,6 +14,7 @@ namespace EmailRegistration
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
             builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMqSettings"));
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DbContext")));
@@ -35,23 +36,24 @@ namespace EmailRegistration
                 logging.SetMinimumLevel(LogLevel.Debug);
             });
 
-
             var app = builder.Build();
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             app.UseHttpsRedirection();
-
             //app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
+            app.UseCors(x =>
+            {
+                x.WithHeaders().AllowAnyHeader();
+                x.WithMethods().AllowAnyMethod();
+                x.WithOrigins("http://localhost:3000");
+                x.AllowCredentials();
+            });
 
             app.Run();
         }

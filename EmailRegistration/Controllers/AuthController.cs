@@ -1,6 +1,7 @@
 ﻿using EmailRegistration.Contracts;
 using EmailRegistration.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 namespace EmailRegistration.Controllers
 {
@@ -20,19 +21,19 @@ namespace EmailRegistration.Controllers
         }
 
         [HttpPost("send-code")]
-        public async Task<IActionResult> IndexAsync([FromBody] string email)
+        public async Task<IActionResult> IndexAsync([FromBody] EmailVerificationRequest request)
         {
-            if(!IsEmailValid(email))
+            if(!IsEmailValid(request.Email))
                 return BadRequest("Invalid Email");
 
             var code = _verificationService.GenerateVerificationCode();
             var message = new EmailVerificationMessage
             {
-                Email = email, 
+                Email = request.Email, 
                 VerificationCode = code
             };
 
-            await _userService.AuthorizeUserAsync(email, code);
+            await _userService.AuthorizeUserAsync(request.Email, code);
             _queueProducer.SendMessage(message);
 
             return Ok("Verification Code sent!");
