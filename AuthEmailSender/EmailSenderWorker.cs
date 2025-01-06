@@ -60,7 +60,7 @@ namespace AuthEmailSender
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation(" [x] Received {0}", json);
+                    _logger.LogInformation(" [x] Received {0} {1}", json, DateTime.Now);
                     _sendEmailService.SendEmail(email.Email, "Email Verification", email.VerificationCode);
                 }
             };
