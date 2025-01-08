@@ -19,7 +19,8 @@ namespace EmailRegistration
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DbContext")));
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddScoped<IEmailAuthQueueProducer, EmailAuthQueueProducerService>();
