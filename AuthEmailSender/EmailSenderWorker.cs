@@ -1,5 +1,5 @@
 using AuthEmailSender.Services;
-using EmailRegistration.Contracts;
+using EmailRegistration.Infrostructure.Messages;
 using EmailRegistration.Services.RabbitMq.Settings;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -37,12 +37,12 @@ namespace AuthEmailSender
                 }
                 catch (RabbitMQ.Client.Exceptions.OperationInterruptedException ex)
                 {
-                    _logger.LogWarning("Очередь '{QueueName}' еще не создана. Ожидание...", _settings.Value.EmailVerificationQueue);
+                    _logger.LogWarning("Queue '{QueueName}' not created. Awaiting...", _settings.Value.EmailVerificationQueue);
                     await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Ошибка подключения к RabbitMQ");
+                    _logger.LogError(ex, "Error with connection to RabbitMQ");
                     await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
                 }
             }
@@ -56,7 +56,7 @@ namespace AuthEmailSender
             {
                 var body = ea.Body;
                 var json = System.Text.Encoding.UTF8.GetString(body.ToArray());
-                var email = System.Text.Json.JsonSerializer.Deserialize<EmailVerificationRequest>(json);
+                var email = System.Text.Json.JsonSerializer.Deserialize<EmailVerificationMessage>(json);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -67,7 +67,7 @@ namespace AuthEmailSender
 
             await channel.BasicConsumeAsync(queue: _settings.Value.EmailVerificationQueue, autoAck: true, consumer: consumer);
 
-            _logger.LogInformation("Начато прослушивание очереди: {QueueName}", _settings.Value.EmailVerificationQueue);
+            _logger.LogInformation("Listening on: {QueueName}", _settings.Value.EmailVerificationQueue);
 
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
