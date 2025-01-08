@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="DataAccess\Services\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

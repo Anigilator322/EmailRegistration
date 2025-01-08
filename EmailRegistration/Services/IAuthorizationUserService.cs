@@ -1,10 +1,8 @@
-﻿using EmailRegistration.Models;
-
-namespace EmailRegistration.Services
+﻿namespace EmailRegistration.Services
 {
     public interface IAuthorizationUserService
     {
-        Task<string> AuthorizeUserAsync(string email, string verificationCode);
-        Task<string> GetVerificationCodeByEmail(string email);
+        public Task<string> AuthorizeUserAsync(string email);
+        public Task<bool> VerifyCodeAsync(string email, string code);
     }
 }

@@ -1,9 +1,9 @@
-﻿using EmailRegistration.Contracts;
+﻿using EmailRegistration.Infrostructure.Messages;
 
 namespace EmailRegistration.Services
 {
     public interface IEmailAuthQueueProducer
     {
-        void SendMessage(EmailVerificationMessage request);
+        public Task<bool> TrySendMessage(EmailVerificationMessage request);
     }
 }

@@ -1,6 +1,6 @@
 using AuthEmailSender.Services;
 using EmailRegistration.Contracts;
-using EmailRegistration.Settings;
+using EmailRegistration.Services.RabbitMq.Settings;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

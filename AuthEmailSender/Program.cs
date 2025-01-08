@@ -1,6 +1,6 @@
 using AuthEmailSender.Services;
 using AuthEmailSender.Settings;
-using EmailRegistration.Settings;
+using EmailRegistration.Services.RabbitMq.Settings;
 
 namespace AuthEmailSender
 {
